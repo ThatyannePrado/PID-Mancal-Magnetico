@@ -2,8 +2,40 @@
 #include "PID_v1.h"
 #include <Arduino.h>
 
+//DEFINIÇÃO DO PID
+/*Define as variáveis do processo */
+double Setpoint1, Input1, Output1;
+double Setpoint2, Input2, Output2;
+
+/* Define os parâmetros do PID */
+double Kp = 7.5e3, Ki = 90.0, Kd = 18.61;
+
+/* Define links e parâmetros iniciais do PID tunning*/
+PID myPID1(&Input1,&Output1,&Setpoint1,Kp,Ki,Kd,AUTOMATIC);
+PID myPID2(&Input2,&Output2,&Setpoint2,Kp,Ki,Kd,AUTOMATIC);
+
+
 void setup() {
   initSaida();//inicia pinos de saída e LED indicador
+
+  //DEFINIÇÃO DE PARÂMETROS DE INPUT
+  //Parâmetro com entradas dos sensores em posição
+  int adc1Value;
+  int adc2Value;
+
+  adc1Value = sensor1Read();
+  adc2Value = sensor2Read();
+
+  // Valores de input e setpoint para PID
+  Input1 = adc1Value;
+  Setpoint1 = 0.0;
+  
+  Input2 = adc2Value;
+  Setpoint2 = 0.0;
+
+  /*Inicia o PID */
+  myPID1.SetMode(AUTOMATIC);
+  myPID2.SetMode(AUTOMATIC);
 
 }
 
@@ -23,38 +55,17 @@ void loop() {
   /*Define corrente de base*/
   int ib = 1; /*Corrente base = 1A*/
 
-  /*Define as variáveis do processo */
-  double Setpoint1, Input1, Output1;
-  double Setpoint2, Input2, Output2;
-
-  /* Define os parâmetros do PID */
-  double Kp, Ki, Kd;
-
-  /*Valores dos parâmtros do PID do mancal tirados 
-  do artigo do Diego*/
-  Kp = 7.5e3;
-  Ki = 90;
-  Kd = 18.61;
-
-  /* Define PID tunning*/
-  PID myPID1(&Input1,&Output1,&Setpoint1,Kp,Ki,Kd,DIRECT);
-  PID myPID2(&Input2,&Output2,&Setpoint2,Kp,Ki,Kd,DIRECT);
-
-  /*Inicia o PID */
-  myPID1.SetMode(AUTOMATIC);
-  myPID2.SetMode(AUTOMATIC);
-
   /*Loop para PID1, eixo X*/
   
   Input1 = adc1Value;
-  Setpoint1 = 0;
+  Setpoint1 = 0.0;
   myPID1.SetTunings(Kp,Ki,Kd);
   myPID1.Compute();        
       
 
   /*Loop para PID2, eixo Y*/
   Input2 = adc2Value;
-  Setpoint2 = 0;
+  Setpoint2 = 0.0;
   myPID2.SetTunings(Kp,Ki,Kd);
   myPID2.Compute();        
   
