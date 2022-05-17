@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../Mancal/PID"
+		},
+		{
+			"name": "PID_simplificado",
+			"path": ".."
+		}
+	],
+	"settings": {}
+}

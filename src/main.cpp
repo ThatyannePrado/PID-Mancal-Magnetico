@@ -1,5 +1,13 @@
+/*
+Autora: Thatyanne Prado
+Placa: ESP32 DOIT devkit
+porta: /dev/ttyACM0
+Em caso de erro de conexão com placa ESP32, utilizar 
+código no cmd : sudo usermod -a -G tty yourname
+*/
+
 #include "main.h"
-#include "PID_v1.h"
+#include <PID_v1.h>
 #include <Arduino.h>
 
 //DEFINIÇÃO DO PID
@@ -34,8 +42,9 @@ void setup() {
   Setpoint2 = 0.0;
 
   /*Inicia o PID */
-  myPID1.SetMode(AUTOMATIC);
-  myPID2.SetMode(AUTOMATIC);
+  myPID1.SetMode(DIRECT);
+  myPID2.SetMode(DIRECT);
+  
 
 }
 
