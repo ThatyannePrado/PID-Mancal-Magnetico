@@ -7,7 +7,6 @@ código no cmd : sudo chmod a+rw /dev/ttyUSB0
 */
 
 #include "main.h"
-#include <PID_v1.h>
 #include <Arduino.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,11 +41,20 @@ double_t Setpoint2, Input2, Output2;
 
 /* Define os parâmetros do PID */
 float_t Kp = 7.5e3, Ki = 90.0, Kd = 18.61;
-//float_t Kp = 10e10, Ki = 90, Kd = 90;
+//float_t Kp = 2e3, Ki = 45.0, Kd = 4.86;
+float_t error1 =0;
+float_t I_error1 = 0;
+float_t D_error1 = 0;
+float_t lastError1 = 0;
 
-/* Define links e parâmetros iniciais do PID tunning*/
-PID myPID1(&Input1,&Output1,&Setpoint1,Kp,Ki,Kd,AUTOMATIC);
-PID myPID2(&Input2,&Output2,&Setpoint2,Kp,Ki,Kd,AUTOMATIC);
+float_t error2 =0;
+float_t I_error2 = 0;
+float_t D_error2 = 0;
+float_t lastError2 = 0;
+
+int dt = 1; //1 ms
+
+
 
 //PARÂMETROS DO PWM
 /*Define as propriedades do PWM*/
@@ -81,17 +89,7 @@ void setup() {
   adc_chars2 = (esp_adc_cal_characteristics_t*)calloc(1, sizeof(esp_adc_cal_characteristics_t));
   esp_adc_cal_value_t val_type2 = esp_adc_cal_characterize(unit, atten, width, DEFAULT_VREF, adc_chars2);
 
-  // Valores de input e setpoint para PID
-  Input1 = adc1Value;
-  Setpoint1 = 0.0;
-  
-  Input2 = adc2Value;
-  Setpoint2 = 0.0;
 
-  /*Inicia o PID */
-  myPID1.SetMode(AUTOMATIC);
-  myPID2.SetMode(AUTOMATIC);
-  
   //Setup do PWM
   /*Conecta o canal ao GPIO a ser controlado*/
   ledcAttachPin(PIN_PWM1, canal1);
@@ -140,25 +138,37 @@ void loop() {
 
   /*Loop para PID1, eixo X*/
   
-  Input1 = sensor1;
-  Setpoint1 = 1.0;
-  myPID1.SetTunings(Kp,Ki,Kd);
-  myPID1.Compute();        
+  Input1 = sensor1; //mm
+  Setpoint1 = 1.0;  //mm
+  error1 = Setpoint1-sensor1;
+  I_error1 += error1;
+  D_error1 = lastError1-error1;
+  //dt é igual a 1ms
+  Output1 = (Kp*error1 + Ki*I_error1 + Kd*D_error1)*pow(10,-4);
+      
       
 
   /*Loop para PID2, eixo Y*/
-  Input2 = sensor2;
-  Setpoint2 = 1.0;
-  myPID2.SetTunings(Kp,Ki,Kd);
-  myPID2.Compute();        
+  Input2 = sensor2; //mm
+  Setpoint2 = 1.0;  //mm
+  error2 = Setpoint2-sensor2;
+  I_error2 += error2;
+  D_error2 = lastError2-error2;
+  //dt é igual a 1ms
+  Output2 = (Kp*error2 + Ki*I_error2 + Kd*D_error2)*pow(10,-4);
+
+  //Restringindo os valores do Output
+  //Ver anti wind-up
+  Output1 = constrain(Output1,-1,1);
+  Output2 = constrain(Output2,-1,1);        
   
 
   /*Calcula correntes para bobinas 
   a partir das correntes de controle*/
-  ixa1 = ib+Output1;
-  ixa2 = ib-Output1;
-  iya1 = ib+Output2;
-  iya2 = ib-Output1;
+  ixa1 = ib-Output1;
+  ixa2 = ib+Output1;
+  iya1 = ib-Output2;
+  iya2 = ib+Output2;
 
   //IMPLEMENTAÇÃO PWM
   //Faz write do PWM  
