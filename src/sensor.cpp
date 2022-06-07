@@ -14,6 +14,9 @@ int sensor1Read(){
     if(i==10) i = 0;
     buffer[i] = analogRead(SENSOR_PIN1);
 
+    //Serial.print("Valor lido no sensor x:");
+    //Serial.println(analogRead(SENSOR_PIN1));
+
     for(char x = 0;x<10;x++){
          valor +=buffer[i];
     }
@@ -28,6 +31,9 @@ int sensor2Read(){
     i++;
     if(i==10) i = 0;
     buffer[i] = analogRead(SENSOR_PIN2);
+
+    //Serial.print("Valor lido no sensor x:");
+    //Serial.println(analogRead(SENSOR_PIN1));
 
     for(char x = 0;x<10;x++){
          valor +=buffer[i];
