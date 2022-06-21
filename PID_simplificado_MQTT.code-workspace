@@ -1,0 +1,44 @@
+{
+	"folders": [
+		{
+			"path": "../PID_simplificado_MQTT"
+		},
+		{
+			"name": "PID",
+			"path": "../Mancal/PID"
+		},
+		{
+			"name": "PID_simplificado",
+			"path": "../PID_simplificado"
+		},
+		{
+			"name": "PID_simp_MQTT_noRTOS",
+			"path": "../PID_simp_MQTT_noRTOS"
+		},
+		{
+			"name": "Teste_ADC",
+			"path": "../Teste/Teste_ADC"
+		},
+		{
+			"name": "teste_hall_sensor",
+			"path": "../Teste/teste_hall_sensor"
+		},
+		{
+			"name": "calibracao_ADC",
+			"path": "../calibracao_ADC"
+		},
+		{
+			"name": "PID_simplificado_calib",
+			"path": "."
+		},
+		{
+			"name": "teste_PWM",
+			"path": "../teste_PWM"
+		},
+		{
+			"name": "teste_PID",
+			"path": "../teste_PID"
+		}
+	],
+	"settings": {}
+}
